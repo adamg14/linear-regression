@@ -1,6 +1,6 @@
 import pandas as pd
 import tensorflow as tf
-
+import numpy as np
 # Load the dataset
 df_train = pd.read_csv('../train.csv')
 df_eval = pd.read_csv('../eval.csv')
@@ -61,3 +61,24 @@ model.fit(train_dataset, epochs=10)
 evaluation_results = model.evaluate(eval_dataset)
 print("evaluation results: ")
 print(evaluation_results)
+
+# generating prediction statistics on the evaluation dataset
+predictions = model.predict(eval_dataset)
+
+# combine preductions with the true labels for analysis
+results = pd.DataFrame({
+    'True_Label': feature_eval,
+    'Predicted_Probability': predictions.flatten(),
+})
+
+# Calculate statistics for each label
+# positive_stats = results[results['True_Label'] == 1]['Predicted_Probability'].describe()
+# negative_stats = results[results['True_Label'] == 0]['Predicted_Probability'].describe()
+positive_stats = results[results['True_Label'] == 1]['Predicted_Probability'].describe()
+negative_stats = results[results['True_Label'] == 0]['Predicted_Probability'].describe()
+
+print(results.head())
+print("Prediction statistics for survival: ")
+print(positive_stats)
+print("Prediction stats for non-survivals")
+print(negative_stats)
